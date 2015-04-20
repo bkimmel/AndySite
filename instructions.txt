@@ -1,0 +1,93 @@
+ON LINE 370: CHANGE: <li class="mix <%= item.src%>" > TO: <li class="mix <%= item.src%>" data-idx="<%= key %>">
+DELETE LINES 565 - 579 AND REPLACE WITH:
+	showcontentbox(works[parseInt($(this).closest('li').data('idx'), 10)]);
+INSERT AT LINE 563:
+	function showcontentbox(works) {
+		var contboxtemplate = $('#conttemp').html();
+		var compiledtemplate = _.template(contboxtemplate);
+		var renderedtemplate = compiledtemplate(works);
+		$('body').append(renderedtemplate);
+		var $workbox = $('.workbox');
+		$workbox.find('ul li').first().addClass('selected');
+		selectedindex = 0;
+
+		$workbox.data('base', works);
+
+		function handleclick(){
+			//console.log( $(this).data('n') );
+			var thisidx = $(this).data('n');
+			if(thisidx === selectedindex) {
+				return 0;
+			}
+			selectedindex = thisidx;
+			if(!works.frames[thisidx].match(/tallright/)) {
+				$workbox.removeClass('tallbox');
+				$workbox.find('iframe').replaceWith( works.frames[thisidx] );
+				$('.selected').removeClass('selected');
+				$workbox.find('ul li:eq(' + thisidx + ')').addClass('selected');
+			}
+			else {
+				$workbox.addClass('tallbox');
+				$workbox.find('iframe').replaceWith( works.frames[thisidx] );
+				$('.selected').removeClass('selected');
+				$workbox.find('ul li:eq(' + thisidx + ')').addClass('selected');
+			}
+		}
+
+		function moveselectedindex(toright) {
+			var nextindex = 0, numframes = works.frames.length;
+			if(toright) {
+				nextindex = selectedindex + 1 >= numframes ? 0 : selectedindex + 1;
+			}
+			else {
+				nextindex = selectedindex === 0 ? numframes - 1 : selectedindex - 1;
+			}
+			handleclick.bind($('ul li').eq(nextindex))();
+		}
+
+		$workbox.find('ul li').on('click', handleclick);
+		$workbox.find('.arrowback').on('click', moveselectedindex.bind(this, false));
+		$workbox.find('.arrownext').on('click', moveselectedindex.bind(this, true));
+
+		setTimeout(function(){ $workbox.find('h2,h3.spin1').addClass('rotatein'); }, 100);
+		setTimeout(function(){ $workbox.find('h3.spin2').addClass('rotatein'); }, 200);
+		setTimeout(function(){ $workbox.find('h3.spin3').addClass('rotatein'); }, 300);
+	}
+
+NOW EDIT THE DATA - FOR EACH JSON OBJECT IN LINES 396-513:
+	{src:'radio',heading:"Common Sense",client:"Operation Lifesaver", classification:"PSA", url:"//player.vimeo.com/video/68606971"},
+	  1.  Add a "year" field:
+	{src:'radio',heading:"Common Sense",client:"Operation Lifesaver", classification:"PSA", url:"//player.vimeo.com/video/68606971", year: "2012"}
+	  2.  Add a "media" field
+	{src:'radio',heading:"Common Sense",client:"Operation Lifesaver", classification:"PSA", url:"//player.vimeo.com/video/68606971", year: "2012", media: "Print &amp; Radio"}  
+	  3.  Add a "blurb" field:
+	{src:'radio',heading:"Common Sense",client:"Operation Lifesaver", classification:"PSA", url:"//player.vimeo.com/video/68606971", year: "2012", media: "Print &amp; Radio", blurb: "Lorem Ipsum..."}   
+	  4.  Add your "frames" field for each media "thing" you have in that section... e.g. if you have a soundcloud frame and 2 vimeo frames
+	  ...add the class "tallright" to things you want the "tall right" layout configuration for:
+	{src:'radio',heading:"Common Sense",client:"Operation Lifesaver", classification:"PSA", url:"//player.vimeo.com/video/68606971", year: "2012", media: "Print &amp; Radio", blurb: "Lorem Ipsum...",
+		frames: [
+			'<iframe style="height: 20%; height: 20vh;" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/141090095&amp;color=46666a&amp;auto_play=true&amp;hide_related=false&amp;show_artwork=false"></iframe>',
+			'<iframe style="height: 40%; height: 40vh;" frameborder="0" src="http://player.vimeo.com/video/68606971" name="1429337049613" class="cboxIframe" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>',
+			'<iframe class="tallright" style="height: 40%; height: 40vh;" frameborder="0" src="http://player.vimeo.com/video/68606971" name="1429337049613" class="cboxIframe" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>'
+		]
+	}   
+
+ADD THIS IN NEAR LINE 58:
+<script type="text/template" id="conttemp">
+	<div class="backfade">
+	  <div class="workbox">
+		<h2><%= heading %></h2>
+		<h3 class="spin1"><span class="client">Client:</span> <%= client %></h3>
+		<h3 class="spin2"><%= year %></h3><h3 class="spin3"><%= media %></h3>
+		<p><%= blurb %></p>
+		<div class="frameholder">
+		<%= frames && frames[0] %>
+		</div>
+		<ul><% frames.length >= 2 && _.forEach(frames, function(v,i,c) { %><% if(i == 0){ print('<div class="arrowback">&lt;</div>') } %><li data-n="<%- i %>"></li><% if(i === c.length - 1) { print('<div class="arrownext">&gt;</div>') } %><% }); %></ul>
+	  </div>
+
+	</div>
+</script>
+
+SAVE THIS FILE: https://raw.githubusercontent.com/bkimmel/AndySite/master/contentboxes.css
+AND LINK TO IT IN HEADER: <link rel="stylesheet" type="text/css" href="contentboxes.css" />
