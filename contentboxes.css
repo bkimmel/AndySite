@@ -18,6 +18,7 @@
     top: 0;
     overflow: hidden;
     max-height: 90vh;
+    padding: 0 0 4em 0;
 }
 
   .workbox h2 {
@@ -73,7 +74,7 @@
 
    .workbox .frameholder {
        font-size: 2.5em;
-       margin: 0 1.47em; 
+       margin: 0 1.47em 0 0; 
        width: calc(100% - 2.94em); 
        text-align: center;
        position: relative;
@@ -90,9 +91,13 @@
 
    .workbox ul {
        display: block;
-       position: relative;
+       position: absolute;
        text-align: center;
        padding: 0;
+       top: 0;
+       left: 50%;
+       transform: translateX(-50%);
+       z-index: 1000;
    }
      .workbox ul li {
        display: inline-block;
@@ -130,6 +135,8 @@
            font-size: 2em;
            transform: translateY(-20%);
            cursor: pointer;
+           transition-property: transform;
+           transition-duration: 200ms;
        }
 
        .workbox ul .arrownext {
@@ -147,10 +154,15 @@
            font-size: 2em;
            transform: translateY(-20%);
            cursor: pointer;
+           transition-property: transform;
+           transition-duration: 200ms;
+       }
+       .workbox ul .arrowback:hover, .workbox ul .arrownext:hover {
+           transform: translateY(-30%);
        }
 
 
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 1281px) {
     .workbox.tallbox p {
        width: 40%;
     }
@@ -161,7 +173,7 @@
        height: 50vh;
        text-align: center;
        position: absolute;
-       top: .95em;
+       top: 1.55em;
        right: 0;
        max-height: 40vh;
      }
@@ -170,7 +182,11 @@
      }
 }
 
-@media screen and (max-width: 1199px) {
+@media screen and (max-width: 1280px) {
+    .workbox {
+        margin: 5px;
+        width: calc(100% - 10px);
+    }
     .workbox p {
         display: none;
     }
@@ -190,5 +206,18 @@
     .workbox .frameholder {
         margin: 0;
         width: 100%;
+    }
+
+    .workbox ul li {
+        width: 12px;
+        height: 12px;
+    }
+
+    .workbox ul .arrowback {
+        font-size: 1em;
+    }
+
+    .workbox ul .arrownext {
+        font-size: 1em;
     }
 }

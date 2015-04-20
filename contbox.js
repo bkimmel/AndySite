@@ -23,8 +23,7 @@ function showcontentbox(works) {
 
     $workbox.data('base', works);
 
-
-    $workbox.find('ul li').on('click', function(){
+    function handleclick(){
         //console.log( $(this).data('n') );
         var thisidx = $(this).data('n');
         if(thisidx === selectedindex) {
@@ -43,7 +42,22 @@ function showcontentbox(works) {
             $('.selected').removeClass('selected');
             $workbox.find('ul li:eq(' + thisidx + ')').addClass('selected');
         }
-    });
+    }
+
+    function moveselectedindex(toright) {
+        var nextindex = 0, numframes = works.frames.length;
+        if(toright) {
+            nextindex = selectedindex + 1 >= numframes ? 0 : selectedindex + 1;
+        }
+        else {
+            nextindex = selectedindex === 0 ? numframes - 1 : selectedindex - 1;
+        }
+        handleclick.bind($('ul li').eq(nextindex))();
+    }
+
+    $workbox.find('ul li').on('click', handleclick);
+    $workbox.find('.arrowback').on('click', moveselectedindex.bind(this, false));
+    $workbox.find('.arrownext').on('click', moveselectedindex.bind(this, true));
 
     setTimeout(function(){ $workbox.find('h2,h3.spin1').addClass('rotatein'); }, 100);
     setTimeout(function(){ $workbox.find('h3.spin2').addClass('rotatein'); }, 200);
